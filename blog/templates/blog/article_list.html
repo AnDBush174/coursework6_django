@@ -1,0 +1,56 @@
+{% extends 'catalog/base.html' %}
+{% load media_tag %}
+{% load static %}
+
+{% block content %}
+<div class="col-12 mb-4">
+    <a class="p-2 btn btn-outline-warning" href="{% url 'blog:create_article' %}">Добавить статью</a>
+</div>
+{% for object in object_list %}
+<div class="col-6">
+    <div class="card mb-4 box-shadow">
+        <div class="card-header text-center">
+            <h4 class="my-0 font-weight-normal">
+                {{ object }}
+            </h4>
+        </div>
+        <div class="card-body">
+            <p class="mt-3 mb-4 m-3 text-center">
+                {% if object.preview %}
+                <img src="{% mediapath object.preview %}" alt="{{ object }}" width="256px"/>
+                {% else %}
+                <img src="{% static 'img/default_article.png' %}" alt="{{ object }}" width="256px"/>
+                {% endif %}
+            </p>
+            <p>{{ object.content|truncatechars:100 }}</p>
+            <p class="text-center">
+                <a href="{% url 'blog:view_article' object.slug %}"
+                   class="btn btn-outline-success">Подробнее</a>
+            </p>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="text-center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page=1">&laquo; Первая</a>
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.next_page_number }}">Следующая</a>
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+        {% endif %}
+
+        <small class="d-block mb-3 text-muted mt-2">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </small>
+    </span>
+</div>
+{% endblock %}

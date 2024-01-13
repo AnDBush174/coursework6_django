@@ -1,0 +1,16 @@
+<h5 class="my-0 mr-md-auto font-weight-normal">Cyberstore</h5>
+<nav class="ms-5">
+    <a class="me-1 p-2 btn btn-outline-primary" href="#">Каталог</a>
+</nav>
+<nav class="d-inline-flex mt-2 mt-md-0 ms-md-auto">
+        {% if user.is_authenticated %}
+            {% if user.first_name %}
+                <small class="text-muted mt-1 me-2 py-2">Привет, {{ user.first_name }}!</small>
+            {% endif %}
+        <a class="me-2 py-2 btn btn-outline-secondary" href="{% url 'users:profile' %}">Профиль</a>
+        <a class="me-2 py-2 btn btn-outline-secondary" href="{% url 'users:logout' %}">Выйти</a>
+        {% else %}
+        <a class="me-2 py-2 btn btn-outline-secondary" href="{% url 'users:login' %}">Войти</a>
+        <a class="me-2 py-2 btn btn-outline-secondary" href="{% url 'users:register' %}">Регистрация</a>
+        {% endif %}
+</nav>
