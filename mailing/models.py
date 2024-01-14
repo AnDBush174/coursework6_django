@@ -25,15 +25,15 @@ class MailingMessage(models.Model):
 
 class MailingSettings(models.Model):
     class FREQUENCY(models.TextChoices):
-        DAILY = 'Ежедневно'
-        WEEKLY = 'Еженедельно'
-        MONTHLY = 'Ежемесячно'
+        DAILY = 'daily', 'Ежедневно'
+        WEEKLY = 'weekly', 'Еженедельно'
+        MONTHLY = 'monthly', 'Ежемесячно'
 
     class STATUS(models.TextChoices):
-        DRAFT = 'Черновик'
-        CREATED = 'Создана'
-        RUNNING = 'Запущена'
-        COMPLETED = 'Завершена'
+        DRAFT = 'draft', 'Черновик'
+        CREATED = 'created', 'Создана'
+        RUNNING = 'running', 'Запущена'
+        COMPLETED = 'completed', 'Завершена'
 
     message = ForeignKey(MailingMessage, on_delete=models.CASCADE,
                          related_name='settings', related_query_name="setting",
@@ -55,3 +55,21 @@ class MailingSettings(models.Model):
         verbose_name_plural = 'рассылки'
 
         ordering = ('mailing_start', 'mailing_end',)
+
+
+class MailingLog(models.Model):
+    class STATUS(models.TextChoices):
+        SUCCESS = 'Успешно'
+        FAILED = 'Неуспешно'
+
+    status = models.CharField(max_length=9, choices=STATUS.choices, **NULLABLE, verbose_name='статус отправки')
+    message = models.TextField(**NULLABLE, verbose_name='ответ сервера')
+    date = models.DateTimeField(**NULLABLE, verbose_name='время попытки')
+
+    def __str__(self):
+        return f'{self.date} - {self.status}'
+
+    class Meta:
+        verbose_name = 'лог'
+        verbose_name_plural = 'логи'
+        ordering = ('status',)
