@@ -49,7 +49,6 @@ INSTALLED_APPS = [
     'clients',
     'users',
     'blog',
-    # 'logs',
 ]
 
 MIDDLEWARE = [

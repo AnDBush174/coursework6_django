@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+    <div class="col-lg-12 col-md-6 col-sm-12">
+        <div class="card mb-4 box-shadow">
+            <div class="card-header"><h3>{{ object }}</h3></div>
+            <div class="card-body">
+                <p><strong>Полный текст рассылки:</strong> {{ object.body }}</p>
+                {% if settings %}
+                    {% for i in settings %}
+                        <p>Период рассылки:
+                        {{ i.mailing_start }} - {{ i.mailing_end }}
+                        <br/>
+                        Частота рассылки: {{ i.mailing_period }}
+                        <br/>
+                        Статус: {{ i.mailing_status }}
+                    {% endfor %}
+                </p>
+                {% endif %}
+                <small>Создатель: {{ object.owner }}</small>
+            </div>
+            <div class="card-footer pt-4">
+                {% if user.is_authenticated %}
+                    <p>
+                        <a href="{% url 'mailing:update_mailing' object.pk %}"
+                           class="m-1 btn btn-sm btn-outline-warning">Редактировать рассылку</a>
+                        <a href="{% url 'mailing:delete_mailing' object.pk %}"
+                           class="m-1 btn btn-sm btn-outline-danger">Удалить рассылку</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

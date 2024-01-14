@@ -21,7 +21,7 @@ class UserLoginView(LoginView):
     """
     form_class = UserLoginForm
     template_name = 'users/login.html'
-    next_page = 'users:profile'
+    next_page = 'mailing:mailing_list'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -151,7 +151,7 @@ class ProfileView(UpdateView):
     """
     model = User
     form_class = UserProfileForm
-    success_url = reverse_lazy('mailing:index')
+    success_url = reverse_lazy('mailing:mailing_list')
 
     def get_object(self, queryset=None):
         return self.request.user

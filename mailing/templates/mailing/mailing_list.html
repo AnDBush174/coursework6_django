@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="row mb-3">
+        <div class="col-3"></div>
+        <ul class="list-group list-group-numbered col-6">
+            {% for object in object_list %}
+                <li class="list-group-item">
+                    <a href="{% url 'mailing:mailing_details' object.pk %}">{{ object }}</a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="row text-center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page=1">&laquo; Первая</a>
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.previous_page_number }}">Предыдущая</a>
+        {% endif %}
+
+        {% if page_obj.has_next %}
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.next_page_number }}">Следующая</a>
+            <a class="btn btn-primary d-inline-flex align-items-center"
+               href="?page={{ page_obj.paginator.num_pages }}">Последняя &raquo;</a>
+        {% endif %}
+
+        <small class="d-block mb-3 text-muted mt-2">
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+        </small>
+    </span>
+    </div>
+{% endblock %}

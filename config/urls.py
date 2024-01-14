@@ -21,9 +21,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('users.urls', namespace='users')),
-    path('blog/', include('blog.urls', namespace='blog')),
     path('mailing/', include('mailing.urls', namespace='mailing')),
+    path('blog/', include('blog.urls', namespace='blog')),
+    path('', include('users.urls', namespace='users')),
 ]
 
 if settings.DEBUG:
