@@ -7,7 +7,7 @@ from mailing.models import MailingMessage, MailingSettings
 
 
 class MailingListView(ListView):
-    paginate_by = 10
+    paginate_by = 50
     model = MailingMessage
     template_name = 'mailing/mailing_list.html'
     extra_context = {'title': 'Список рассылок'}
@@ -34,40 +34,41 @@ class MailingCreateView(CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Создание товара'
-        VersionFormset = inlineformset_factory(MailingMessage, MailingSettings, form=MailingForm, extra=1)
+        VersionFormset = inlineformset_factory(MailingMessage, MailingSettings, form=MailingForm,
+                                               can_delete=False, extra=1)
         if self.request.method == 'POST':
             context['formset'] = VersionFormset(self.request.POST)
         else:
             context['formset'] = VersionFormset()
         return context
 
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.owner = self.request.user
-        self.object.save()
-        formset = self.get_context_data()['formset']
-        if formset.is_valid():
-            formset.instance = self.object
-            formset.save()
-            return super().form_valid(form)
-        else:
-            return self.form_invalid(form)
-
     # def form_valid(self, form):
-    #     context = self.get_context_data()
-    #     formset = context['formset']
-    #
-    #     if form.is_valid() and formset.is_valid():
-    #         self.object = form.save()
-    #         self.object.owner = self.request.user
-    #         self.object.save()
-    #
+    #     self.object = form.save()
+    #     self.object.owner = self.request.user
+    #     self.object.save()
+    #     formset = self.get_context_data()['formset']
+    #     if formset.is_valid():
     #         formset.instance = self.object
     #         formset.save()
-    #
     #         return super().form_valid(form)
     #     else:
     #         return self.form_invalid(form)
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+
+        if form.is_valid() and formset.is_valid():
+            self.object = form.save()
+            self.object.owner = self.request.user
+            self.object.save()
+
+            formset.instance = self.object
+            formset.save()
+
+            return super().form_valid(form)
+        else:
+            return self.form_invalid(form)
 
     def form_invalid(self, form):
         context = self.get_context_data()
@@ -97,11 +98,21 @@ class MailingUpdateView(UpdateView):
         return context
 
     def form_valid(self, form):
-        formset = self.get_context_data().get('formset')
+        formset = self.get_context_data()['formset']
         if self.request.user == self.object.owner or self.request.user.is_superuser:
-            formset.save()
-            return super().form_valid(form)
-        return self.form_invalid(form)
+            if form.is_valid() and formset.is_valid():
+                formset.instance = self.object
+                formset.save()
+                return super().form_valid(form)
+            else:
+                return self.form_invalid(form)
+
+    # def form_valid(self, form):
+    #     formset = self.get_context_data().get('formset')
+    #     if self.request.user == self.object.owner or self.request.user.is_superuser:
+    #         formset.save()
+    #         return super().form_valid(form)
+    #     return self.form_invalid(form)
 
 
 class MailingDeleteView(DeleteView):
