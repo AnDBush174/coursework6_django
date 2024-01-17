@@ -26,3 +26,9 @@ class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
         model = MailingSettings
         fields = '__all__'
 
+
+class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
+    class Meta:
+        model = MailingMessage
+        fields = ('is_published',)
+

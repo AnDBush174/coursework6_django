@@ -6,7 +6,9 @@
         <ul class="list-group list-group-numbered col-6">
             {% for object in object_list %}
                 <li class="list-group-item">
-                    <a href="{% url 'mailing:mailing_details' object.pk %}">{{ object }}</a>
+                    <a href="{% url 'mailing:mailing_details' object.pk %}">
+                        {{ object }} ({{ object.is_published|yesno:"Опубликована,Не опубликована" }})
+                    </a>
                 </li>
             {% endfor %}
         </ul>
