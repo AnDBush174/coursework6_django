@@ -10,7 +10,7 @@ from users.models import NULLABLE
 class MailingMessage(models.Model):
     subject = models.CharField(max_length=150, verbose_name='тема письма')
     body = models.TextField(**NULLABLE, verbose_name='тело письма')
-
+    is_published = models.BooleanField(default=False, verbose_name='опубликована')
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               related_name='mails', related_query_name="mail",
                               **NULLABLE, verbose_name='автор рассылки')
@@ -19,8 +19,12 @@ class MailingMessage(models.Model):
         return self.subject
 
     class Meta:
-        verbose_name = 'сообщение'
-        verbose_name_plural = 'сообщения'
+        verbose_name = 'рассылка'
+        verbose_name_plural = 'рассылки'
+        ordering = ('owner', 'is_published')
+        permissions = [
+            ('can_cancel_mailing', 'Может отменять публикацию рассылки'),
+        ]
 
 
 class MailingSettings(models.Model):
@@ -51,10 +55,15 @@ class MailingSettings(models.Model):
         return f'{self.mailing_start} - {self.mailing_end}'
 
     class Meta:
-        verbose_name = 'рассылка'
-        verbose_name_plural = 'рассылки'
-
+        verbose_name = 'настройки рассылки'
+        verbose_name_plural = 'настройки рассылки'
         ordering = ('mailing_start', 'mailing_end',)
+
+    def get_mailing_status_display(self):
+        return dict(self.STATUS.choices).get(self.mailing_status, 'Не указан')
+
+    def get_mailing_period_display(self):
+        return dict(self.FREQUENCY.choices).get(self.mailing_period, 'Не указано')
 
 
 class MailingLog(models.Model):

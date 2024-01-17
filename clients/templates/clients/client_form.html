@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row col-12">
+    <div class="col-3"></div>
+    <div class="card col-6 mb-4 box-shadow">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="p-2 btn btn-outline-warning">
+                    {% if object %}
+                    Сохранить изменения
+                    {% else %}
+                    Создать подписчика
+                    {% endif %}
+                </button>
+            {% if object %}
+                <a href="{% url 'clients:delete_client' object.pk %}"
+                           class="m-1 btn p-2 btn-outline-danger">Удалить подписчика</a>
+            {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

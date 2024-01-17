@@ -1,6 +1,7 @@
 <h5 class="my-0 mr-md-auto font-weight-normal">SPAMER's BAY</h5>
 <nav class="ms-5">
-    <a class="me-1 p-2 btn btn-outline-primary" href="#">Добавить клиента</a>
+    <a class="me-1 p-2 btn btn-outline-primary" href="{% url 'clients:add_client' %}">Добавить подписчика</a>
+    <a class="me-1 p-2 btn btn-outline-primary" href="{% url 'clients:all_clients' %}">Список подписчиков</a>
     <a class="me-1 p-2 btn btn-outline-primary" href="{% url 'mailing:create_mailing' %}">Добавить рассылку</a>
     <a class="me-1 p-2 btn btn-outline-primary" href="{% url 'mailing:mailing_list' %}">Просмотреть рассылки</a>
 </nav>

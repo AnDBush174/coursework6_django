@@ -1,6 +1,6 @@
 from django import forms
 
-from mailing.models import MailingMessage, MailingSettings
+from clients.models import Client
 
 
 class StyleFormMixin:
@@ -15,20 +15,7 @@ class StyleFormMixin:
                 field.widget.attrs['class'] = 'form-control mt-2 mb-2'
 
 
-class MailingForm(StyleFormMixin, forms.ModelForm):
+class ClientForm(StyleFormMixin, forms.ModelForm):
     class Meta:
-        model = MailingMessage
+        model = Client
         exclude = ('owner',)
-
-
-class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
-    class Meta:
-        model = MailingSettings
-        fields = '__all__'
-
-
-class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
-    class Meta:
-        model = MailingMessage
-        fields = ('is_published',)
-
