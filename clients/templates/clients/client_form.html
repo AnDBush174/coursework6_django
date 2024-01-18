@@ -15,10 +15,6 @@
                     Создать подписчика
                     {% endif %}
                 </button>
-            {% if object %}
-                <a href="{% url 'clients:delete_client' object.pk %}"
-                           class="m-1 btn p-2 btn-outline-danger">Удалить подписчика</a>
-            {% endif %}
             </form>
         </div>
     </div>
