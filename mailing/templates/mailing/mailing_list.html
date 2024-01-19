@@ -1,17 +1,70 @@
 {% extends 'base.html' %}
 
 {% block content %}
+    {% if user.is_authenticated %}
+        <div class="col-12 mb-3">
+            <a href="{% url 'mailing:create_mailing' %}" class="btn btn-lg btn-outline-primary">Создать рассылку</a>
+        </div>
+    {% endif %}
     <div class="row mb-3">
-        <div class="col-3"></div>
-        <ul class="list-group list-group-numbered col-6">
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Название рассылки</th>
+                <th scope="col">Время</th>
+                <th scope="col">Периодичность</th>
+                <th scope="col">Статус рассылки</th>
+                <th scope="col">Опубликована</th>
+                <th scope="col">Управление</th>
+            </tr>
+            </thead>
+            <tbody>
             {% for object in object_list %}
-                <li class="list-group-item">
-                    <a href="{% url 'mailing:mailing_details' object.pk %}">
-                        {{ object }} ({{ object.is_published|yesno:"Опубликована,Не опубликована" }})
-                    </a>
-                </li>
+                <tr>
+                    <td>
+                        {{ object.id }}
+                    </td>
+                    <td>
+                        {{ object }}
+                    </td>
+                    <td>
+                        {% for obj in object.settings.get_queryset %}
+                        {{ obj|default:'Не указано' }}<br/>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for obj in object.settings.get_queryset %}
+                        {{ obj.get_mailing_period_display }}<br/>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {% for obj in object.settings.get_queryset %}
+                        {{ obj.get_mailing_status_display }}<br/>
+                        {% endfor %}
+                    </td>
+                    <td>
+                        {{ object.is_published|yesno:"Да, Нет" }}
+                    </td>
+                    {% if user == object.owner or perms.mailing.view_mailingmessage %}
+                    <td>
+                        <a href="{% url 'mailing:mailing_details' object.pk %}">Просмотреть</a>
+                    {% if user.is_superuser or user == object.owner %}
+                        | <a href="{% url 'mailing:update_mailing' object.pk %}">Редактировать</a>
+                    {% elif perms.mailing.can_cancel_mailing %}
+                        | <a href="{% url 'mailing:update_mailing' object.pk %}">Изменить статус</a>
+                    {% endif %}
+                    {% if user == object.owner or perms.mailing.delete_mailingmessage %}
+                        | <a href="{% url 'mailing:delete_mailing' object.pk %}">Удалить</a>
+                    {% endif %}
+                    </td>
+                    {% else %}
+                        <td></td>
+                    {% endif %}
+                </tr>
             {% endfor %}
-        </ul>
+            </tbody>
+        </table>
     </div>
 
     <div class="row text-center">

@@ -4,6 +4,7 @@ from django.http import HttpResponseForbidden
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
+from clients.models import Client
 from mailing.forms import MailingForm, ManagerMailingForm
 from mailing.models import MailingMessage, MailingSettings
 
@@ -83,9 +84,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = MailingMessage
     template_name = 'mailing/mailing_form.html'
     form_class = MailingForm
-
-    def get_success_url(self):
-        return reverse('mailing:mailing_details', kwargs={'pk': self.object.pk})
+    success_url = reverse_lazy('mailing:mailing_list')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -112,7 +111,8 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
                 or self.request.user.is_superuser)
 
     def get_form_class(self):
-        if not self.request.user.is_superuser and self.request.user.has_perm('mailing.can_cancel_mailing'):
+        if (self.request.user.has_perm('mailing.can_cancel_mailing') and not self.request.user.is_superuser
+                and not self.request.user == self.object.owner):
             return ManagerMailingForm
         return MailingForm
 
@@ -120,7 +120,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         pass
 
 
-class MailingDeleteView(LoginRequiredMixin, DeleteView):
+class MailingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = MailingMessage
     template_name = 'mailing/mailing_delete.html'
     success_url = reverse_lazy('mailing:mailing_list')
