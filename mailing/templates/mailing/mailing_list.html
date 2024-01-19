@@ -15,6 +15,9 @@
                 <th scope="col">Время</th>
                 <th scope="col">Периодичность</th>
                 <th scope="col">Статус рассылки</th>
+                {% if perms.view_mailing %}
+                <th scope="col">Автор рассылки</th>
+                {% endif %}
                 <th scope="col">Опубликована</th>
                 <th scope="col">Управление</th>
             </tr>
@@ -43,6 +46,11 @@
                         {{ obj.get_mailing_status_display }}<br/>
                         {% endfor %}
                     </td>
+                {% if perms.view_mailing %}
+                    <td>
+                        {{ object.owner }}
+                    </td>
+                {% endif %}
                     <td>
                         {{ object.is_published|yesno:"Да, Нет" }}
                     </td>
@@ -50,12 +58,12 @@
                     <td>
                         <a href="{% url 'mailing:mailing_details' object.pk %}">Просмотреть</a>
                     {% if user.is_superuser or user == object.owner %}
-                        | <a href="{% url 'mailing:update_mailing' object.pk %}">Редактировать</a>
+                        <br /><a href="{% url 'mailing:update_mailing' object.pk %}">Редактировать</a>
                     {% elif perms.mailing.can_cancel_mailing %}
-                        | <a href="{% url 'mailing:update_mailing' object.pk %}">Изменить статус</a>
+                        <br /><a href="{% url 'mailing:update_mailing' object.pk %}">Изменить статус</a>
                     {% endif %}
                     {% if user == object.owner or perms.mailing.delete_mailingmessage %}
-                        | <a href="{% url 'mailing:delete_mailing' object.pk %}">Удалить</a>
+                        <br /><a href="{% url 'mailing:delete_mailing' object.pk %}">Удалить</a>
                     {% endif %}
                     </td>
                     {% else %}

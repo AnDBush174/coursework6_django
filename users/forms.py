@@ -12,11 +12,22 @@ class StyleFormMixin:
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        for field in self.fields:
-            self.fields[field].widget.attrs.update({
-                'class': 'form-control mt-2',
-                'autocomplete': 'off'
-            })
+        for field_name, field in self.fields.items():
+            if isinstance(field, forms.ChoiceField):
+                field.widget.attrs['class'] = 'form-select'
+            elif isinstance(field, forms.BooleanField):
+                field.widget.attrs['class'] = 'form-check-input'
+            else:
+                field.widget.attrs['class'] = 'form-control mt-2 mb-2'
+
+
+class HiddenInputsMixin:
+    """Скрытие пароля в форме"""
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['is_superuser'].widget = forms.HiddenInput()
+        self.fields['password'].widget = forms.HiddenInput()
 
 
 class UserLoginForm(StyleFormMixin, AuthenticationForm):
@@ -54,11 +65,30 @@ class UserProfileForm(StyleFormMixin, UserChangeForm):
     """
      Форма обновления данных пользователя
      """
+
     class Meta:
         model = User
         fields = ('email', 'first_name', 'last_name',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         self.fields['password'].widget = forms.HiddenInput()
+
+
+class ModeratorUserForm(StyleFormMixin, HiddenInputsMixin, UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('is_active', 'is_superuser')
+        labels = {
+            'is_active': 'Не заблокирован',
+        }
+
+
+class AdminUserForm(StyleFormMixin, HiddenInputsMixin, UserChangeForm):
+    """
+     Форма обновления данных пользователя
+     """
+
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email', 'is_active', 'is_superuser')

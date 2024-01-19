@@ -2,16 +2,21 @@ import os
 import random
 import string
 
+from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.mixins import PermissionRequiredMixin, LoginRequiredMixin
 from django.contrib.auth.views import LoginView, PasswordResetView, PasswordResetConfirmView
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
-from django.shortcuts import redirect
+from django.core.paginator import Paginator
+from django.http import HttpResponseForbidden, HttpResponse, request
+from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.views import View
-from django.views.generic import CreateView, TemplateView, UpdateView
+from django.views.generic import CreateView, TemplateView, UpdateView, DeleteView
 
-from users.forms import UserRegisterForm, UserLoginForm, UserForgotPasswordForm, UserSetNewPasswordForm, UserProfileForm
+from users.forms import UserRegisterForm, UserLoginForm, UserForgotPasswordForm, UserSetNewPasswordForm, \
+    UserProfileForm, ModeratorUserForm, AdminUserForm
 from users.models import User
 
 
@@ -145,7 +150,7 @@ class UserPasswordResetConfirmView(PasswordResetConfirmView):
         return context
 
 
-class ProfileView(UpdateView):
+class ProfileView(LoginRequiredMixin, UpdateView):
     """
     Представление редактирования профиля
     """
@@ -162,3 +167,53 @@ class ProfileView(UpdateView):
         return context
 
 
+class UserUpdateView(PermissionRequiredMixin, UpdateView):
+    model = User
+    permission_required = 'users.can_block_user'
+    success_url = 'users:users_list'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = f'Редактирование "{self.object}"'
+        return context
+
+    def get_success_url(self):
+        return reverse('users:list_users')
+
+    def form_valid(self, form):
+        if form.is_valid():
+            superuser_status = form.cleaned_data['is_superuser']
+            if superuser_status:
+                return HttpResponseForbidden('Ататат! Нельзя блокировать суперадмина')
+            else:
+                return super().form_valid(form)
+
+    def get_form_class(self):
+        if self.request.user.is_superuser:
+            return AdminUserForm
+        elif self.request.user == self.object:
+            return UserProfileForm
+        return ModeratorUserForm
+
+
+@login_required
+@permission_required(['users.view_user'])
+def get_users_list(request):
+    users_list = User.objects.all()
+    paginator = Paginator(users_list, 50)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    context = {
+        'object_list': users_list,
+        'title': 'Список пользователей сервиса',
+        "page_obj": page_obj
+    }
+    return render(request, 'users/users_list.html', context)
+
+
+class UserDeleteView(PermissionRequiredMixin, DeleteView):
+    model = User
+    permission_required = 'users.delete_user'
+    template_name = 'users/confirm_delete_user.html'
+    success_url = reverse_lazy('users:list_users')

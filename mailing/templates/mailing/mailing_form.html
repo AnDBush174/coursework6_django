@@ -5,6 +5,7 @@
     <form class="row" method="post" enctype="multipart/form-data">
         <div class="col-6">
             <div class="card mb-4 box-shadow">
+            <div class="card-header"><h5>Настройки рассылки</h5></div>
                 <div class="card-body">
                     {% csrf_token %}
                     {{ form.as_p }}
@@ -21,9 +22,10 @@
         {% if formset %}
         <div class="col-6">
             <div class="card mb-4 box-shadow">
+                <div class="card-header"><h5>Параметры запуска</h5></div>
                 <div class="card-body">
                     {{ formset.management_form }}
-                    {% for form in formset.forms %}
+                    {% for form in formset %}
                         {{ form.as_p}}
                         {% if not forloop.last %}
                         <hr class="m-4" />
