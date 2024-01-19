@@ -8,7 +8,7 @@ from django.contrib.auth.views import LoginView, PasswordResetView, PasswordRese
 from django.contrib.sites.shortcuts import get_current_site
 from django.core.mail import send_mail
 from django.core.paginator import Paginator
-from django.http import HttpResponseForbidden, HttpResponse
+from django.http import HttpResponseForbidden, HttpResponse, request
 from django.shortcuts import redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy, reverse
@@ -180,6 +180,14 @@ class UserUpdateView(PermissionRequiredMixin, UpdateView):
     def get_success_url(self):
         return reverse('users:list_users')
 
+    def form_valid(self, form):
+        if form.is_valid():
+            superuser_status = form.cleaned_data['is_superuser']
+            if superuser_status:
+                return HttpResponseForbidden('Ататат! Нельзя блокировать суперадмина')
+            else:
+                return super().form_valid(form)
+
     def get_form_class(self):
         if self.request.user.is_superuser:
             return AdminUserForm
@@ -192,7 +200,7 @@ class UserUpdateView(PermissionRequiredMixin, UpdateView):
 @permission_required(['users.view_user'])
 def get_users_list(request):
     users_list = User.objects.all()
-    paginator = Paginator(users_list , 50)
+    paginator = Paginator(users_list, 50)
 
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
