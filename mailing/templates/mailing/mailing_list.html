@@ -35,12 +35,12 @@
                     </td>
                     <td>
                         {% for obj in object.settings.get_queryset %}
-                        {{ obj.mailing_period|default:'Не указано' }}<br/>
+                        {{ obj.get_mailing_period_display }}<br/>
                         {% endfor %}
                     </td>
                     <td>
                         {% for obj in object.settings.get_queryset %}
-                        {{ obj.mailing_status|default:'черновик' }}<br/>
+                        {{ obj.get_mailing_status_display }}<br/>
                         {% endfor %}
                     </td>
                     <td>

@@ -34,7 +34,6 @@ class MailingSettings(models.Model):
         MONTHLY = 'monthly', 'Ежемесячно'
 
     class STATUS(models.TextChoices):
-        DRAFT = 'draft', 'Черновик'
         CREATED = 'created', 'Создана'
         RUNNING = 'running', 'Запущена'
         COMPLETED = 'completed', 'Завершена'
@@ -47,7 +46,7 @@ class MailingSettings(models.Model):
     mailing_period = models.CharField(max_length=12, choices=FREQUENCY.choices,
                                       **NULLABLE, verbose_name='периодичность')
     mailing_status = models.CharField(max_length=10, choices=STATUS.choices,
-                                      default='draft', verbose_name='статус рассылки')
+                                      default='created', verbose_name='статус рассылки')
 
     recipient = models.ManyToManyField(Client, related_name='clients', verbose_name='клиенты')
 
@@ -60,7 +59,7 @@ class MailingSettings(models.Model):
         ordering = ('mailing_start', 'mailing_end',)
 
     def get_mailing_status_display(self):
-        return dict(self.STATUS.choices).get(self.mailing_status, 'Не указан')
+        return dict(self.STATUS.choices).get(self.mailing_status, 'Черновик')
 
     def get_mailing_period_display(self):
         return dict(self.FREQUENCY.choices).get(self.mailing_period, 'Не указано')
