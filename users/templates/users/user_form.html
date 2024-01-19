@@ -11,7 +11,9 @@
                     {{ form.as_p }}
                     <button type="submit" class="form-control p-2 btn btn-outline-warning">Сохранить</button>
                 </div>
+                {% if not perms.users.can_block_user %}
                 <div class="card-footer"><a href="{% url 'users:password_reset' %}">Сменить пароль</a></div>
+                {% endif %}
             </div>
         </div>
     </form>

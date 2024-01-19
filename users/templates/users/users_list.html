@@ -2,9 +2,21 @@
 
 {% block content %}
     <div class="row mb-3">
-        <table class="table table-striped-columns">
+        <table class="table table-columns">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Имя пользователя</th>
+                <th scope="col">Email</th>
+                <th scope="col">Статус активности</th>
+                <th scope="col">Управление</th>
+            </tr>
+            </thead>
             {% for object in object_list %}
             <tr>
+                <td>
+                    {{ object.id }}
+                </td>
                 <td>
                     {{ object.first_name }} {{ object.last_name }}
                 </td>
@@ -12,10 +24,13 @@
                     {{ object }}
                 </td>
                 <td>
-                    {{ object.is_active|yesno:"Активен,Не активен" }}
+                    {{ object.is_active|yesno:"Активен,Заблокирован" }}
                 </td>
                 <td>
                     <a href="{% url 'users:user_edit' object.pk %}">Редактировать</a>
+                    {% if user.is_superuser %}
+                    <br /><a href="{% url 'users:user_delete' object.pk %}">Удалить</a>
+                    {% endif %}
                 </td>
             </tr>
             {% endfor %}
