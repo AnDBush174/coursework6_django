@@ -4,7 +4,6 @@ from .models import MailingSettings, MailingMessage
 
 class MailingSettingsInline(admin.StackedInline):
     model = MailingSettings
-    filter_horizontal = ('recipient',)
     extra = 1
     can_delete = False
     verbose_name = 'настройки рассылки'

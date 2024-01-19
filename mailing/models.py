@@ -10,7 +10,9 @@ from users.models import NULLABLE
 class MailingMessage(models.Model):
     subject = models.CharField(max_length=150, verbose_name='тема письма')
     body = models.TextField(**NULLABLE, verbose_name='тело письма')
+    recipient = models.ManyToManyField(Client, related_name='clients', verbose_name='клиенты')
     is_published = models.BooleanField(default=False, verbose_name='опубликована')
+
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               related_name='mails', related_query_name="mail",
                               **NULLABLE, verbose_name='автор рассылки')
@@ -48,7 +50,7 @@ class MailingSettings(models.Model):
     mailing_status = models.CharField(max_length=10, choices=STATUS.choices,
                                       default='created', verbose_name='статус рассылки')
 
-    recipient = models.ManyToManyField(Client, related_name='clients', verbose_name='клиенты')
+
 
     def __str__(self):
         return f'{self.mailing_start} - {self.mailing_end}'

@@ -4,12 +4,21 @@ from django.http import HttpResponseForbidden
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from clients.models import Client
-from mailing.forms import MailingForm, ManagerMailingForm
+from mailing.forms import MailingForm, ManagerMailingForm, MailingSettingsForm
 from mailing.models import MailingMessage, MailingSettings
 
 
+class GetUserForFormMixin:
+    def get_form_kwargs(self):
+        """Метод для получения конкретного пользователя для передачи в форму,
+        чтобы вывести в форме список клиентов только этого пользователя"""
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
+
+
 class MailingListView(LoginRequiredMixin, ListView):
+    """Представление для вывода списка всех рассылок"""
     paginate_by = 50
     model = MailingMessage
     template_name = 'mailing/mailing_list.html'
@@ -24,6 +33,7 @@ class MailingListView(LoginRequiredMixin, ListView):
 
 
 class MailingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
+    """Представление для просмотра одной рассылки"""
     model = MailingMessage
     template_name = 'mailing/mailing_details.html'
     permission_required = 'mailing.view_mailingmessage'
@@ -41,7 +51,8 @@ class MailingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView)
         return HttpResponseForbidden("У вас нет прав для просмотра этого объекта.")
 
 
-class MailingCreateView(LoginRequiredMixin, CreateView):
+class MailingCreateView(LoginRequiredMixin, GetUserForFormMixin, CreateView):
+    """Представление для создания рассылки"""
     model = MailingMessage
     template_name = 'mailing/mailing_form.html'
     form_class = MailingForm
@@ -50,12 +61,13 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Создание рассылки'
-        formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingForm,
-                                                can_delete=False, extra=1)
+        formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
+                                                extra=1, can_delete=False)
         if self.request.method == 'POST':
             context['formset'] = formset_factory(self.request.POST)
         else:
             context['formset'] = formset_factory()
+
         return context
 
     def form_valid(self, form):
@@ -80,7 +92,8 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
         return self.render_to_response(context)
 
 
-class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormMixin, UpdateView):
+    """Представление для редактирования рассылки"""
     model = MailingMessage
     template_name = 'mailing/mailing_form.html'
     form_class = MailingForm
@@ -90,7 +103,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         context['title'] = 'Редактирование рассылки'
         if self.request.user == self.object.owner or self.request.user.is_superuser:
-            formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingForm, extra=1)
+            formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm, extra=1)
             if self.request.method == 'POST':
                 context['formset'] = formset_factory(self.request.POST, instance=self.object)
             else:
@@ -121,6 +134,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 
 class MailingDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Представление для удаления рассылки"""
     model = MailingMessage
     template_name = 'mailing/mailing_delete.html'
     success_url = reverse_lazy('mailing:mailing_list')
