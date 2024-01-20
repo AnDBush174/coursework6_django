@@ -18,26 +18,19 @@ class StyleFormMixin:
 
 
 class MailingForm(StyleFormMixin, forms.ModelForm):
-    recipients = forms.ModelMultipleChoiceField(queryset=Client.objects.none(), widget=forms.SelectMultiple)
+    # recipient = forms.ModelMultipleChoiceField(queryset=Client.objects.none(), widget=forms.SelectMultiple)
 
     class Meta:
         model = MailingMessage
-        fields = ['subject', 'body', 'recipients', 'is_published']
+        fields = ['subject', 'body', 'recipient', 'is_published',]
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
         super().__init__(*args, **kwargs)
-        if user and isinstance(user, User):
-            if user.is_superuser:
-                self.fields['recipients'].queryset = Client.objects.all()
-            else:
-                self.fields['recipients'].queryset = Client.objects.filter(owner=user)
-
-    def save(self, commit=True):
-        mailing_message = super().save()
-        if commit:
-            mailing_message.recipient.set(self.cleaned_data['recipients'])
-        return mailing_message
+        if user.is_superuser:
+            self.fields['recipient'].queryset = Client.objects.all()
+        else:
+            self.fields['recipient'].queryset = Client.objects.filter(owner=user)
 
 
 class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
