@@ -182,9 +182,9 @@ class UserUpdateView(PermissionRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         if form.is_valid():
-            superuser_status = form.cleaned_data['is_superuser']
-            if superuser_status:
-                return HttpResponseForbidden('Ататат! Нельзя блокировать суперадмина')
+            curr_user = User.objects.get(pk=self.get_object().pk)
+            if curr_user.is_superuser:
+                return HttpResponseForbidden('<h3>Ататат! Нельзя блокировать суперадмина</h3>')
             else:
                 return super().form_valid(form)
 
@@ -212,8 +212,8 @@ def get_users_list(request):
     return render(request, 'users/users_list.html', context)
 
 
-class UserDeleteView(PermissionRequiredMixin, DeleteView):
-    model = User
-    permission_required = 'users.delete_user'
-    template_name = 'users/confirm_delete_user.html'
-    success_url = reverse_lazy('users:list_users')
+# class UserDeleteView(PermissionRequiredMixin, DeleteView):
+#     model = User
+#     permission_required = 'users.delete_user'
+#     template_name = 'users/confirm_delete_user.html'
+#     success_url = reverse_lazy('users:list_users')

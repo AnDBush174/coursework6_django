@@ -21,12 +21,11 @@ class StyleFormMixin:
                 field.widget.attrs['class'] = 'form-control mt-2 mb-2'
 
 
-class HiddenInputsMixin:
+class HiddenPasswordMixin:
     """Скрытие пароля в форме"""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['is_superuser'].widget = forms.HiddenInput()
         self.fields['password'].widget = forms.HiddenInput()
 
 
@@ -61,7 +60,7 @@ class UserSetNewPasswordForm(StyleFormMixin, SetPasswordForm):
     pass
 
 
-class UserProfileForm(StyleFormMixin, UserChangeForm):
+class UserProfileForm(StyleFormMixin, HiddenPasswordMixin, UserChangeForm):
     """
      Форма обновления данных пользователя
      """
@@ -70,25 +69,21 @@ class UserProfileForm(StyleFormMixin, UserChangeForm):
         model = User
         fields = ('email', 'first_name', 'last_name',)
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['password'].widget = forms.HiddenInput()
 
-
-class ModeratorUserForm(StyleFormMixin, HiddenInputsMixin, UserChangeForm):
+class ModeratorUserForm(StyleFormMixin, HiddenPasswordMixin, UserChangeForm):
     class Meta:
         model = User
-        fields = ('is_active', 'is_superuser')
+        fields = ('is_active',)
         labels = {
             'is_active': 'Не заблокирован',
         }
 
 
-class AdminUserForm(StyleFormMixin, HiddenInputsMixin, UserChangeForm):
+class AdminUserForm(StyleFormMixin, HiddenPasswordMixin, UserChangeForm):
     """
      Форма обновления данных пользователя
      """
 
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'email', 'is_active', 'is_superuser')
+        fields = ('first_name', 'last_name', 'email', 'is_active')

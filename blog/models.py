@@ -7,7 +7,7 @@ from users.models import NULLABLE, User
 
 class Article(models.Model):
     title = models.CharField(max_length=255, verbose_name='заголовок')
-    slug = models.CharField(max_length=200, unique=True, db_index=True, verbose_name='url')
+    slug = models.CharField(max_length=200, unique=True, **NULLABLE, db_index=True, verbose_name='url')
     content = models.TextField(verbose_name='содержимое')
     preview = models.ImageField(upload_to='blog_images/', **NULLABLE, verbose_name='изображение')
     created_on = models.DateTimeField(auto_now_add=True, verbose_name='дата создания')

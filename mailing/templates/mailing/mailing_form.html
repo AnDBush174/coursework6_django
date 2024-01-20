@@ -9,13 +9,23 @@
                 <div class="card-body">
                     {% csrf_token %}
                     {{ form.as_p }}
-                    <button type="submit" class="p-2 btn btn-outline-warning form-control">
+                <div class="input-group mb-3">
+                    <a href="{% url 'mailing:mailing_list' %}" class="p-2 btn btn-outline-primary">
+                        Назад
+                    </a>
+                    <button type="submit" class="p-2 btn btn-outline-success">
                         {% if object %}
                         Сохранить изменения
                         {% else %}
                         Создать рассылку
                         {% endif %}
                     </button>
+                    {% if user == object.owner %}
+                    <a href="{% url 'mailing:update_mailing' object.pk %}" class="p-2 btn btn-outline-warning">
+                        Сохранить и продолжить редактирование
+                    </a>
+                    {% endif %}
+                </div>
                 </div>
             </div>
         </div>

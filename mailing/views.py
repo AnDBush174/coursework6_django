@@ -27,9 +27,9 @@ class MailingListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.request.user.has_perm('mailing.view_mailingmessage'):
-            return queryset.order_by('-is_published')
+            return queryset.order_by('pk')
         else:
-            return queryset.filter(owner=self.request.user).order_by('-setting__mailing_start')
+            return queryset.filter(owner=self.request.user).order_by('-pk')
 
 
 class MailingDetailView(LoginRequiredMixin, PermissionRequiredMixin, DetailView):
@@ -64,7 +64,8 @@ class MailingCreateView(LoginRequiredMixin, GetUserForFormMixin, CreateView):
         formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
                                                 extra=1, can_delete=False)
         if self.request.method == 'POST':
-            context['formset'] = formset_factory(self.request.POST)
+            context['formset'] = formset_factory(self.request.POST,
+                                                 queryset=MailingMessage.objects.filter(recipient=self.request.user))
         else:
             context['formset'] = formset_factory()
 
