@@ -175,7 +175,6 @@ class UserUpdateView(PermissionRequiredMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['title'] = f'Редактирование "{self.object}"'
-        del context['user']  # костыль для правильного отображения имени авторизованного пользователя
         return context
 
     def get_success_url(self):

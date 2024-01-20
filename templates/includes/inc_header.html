@@ -12,10 +12,10 @@
         {% if user.is_authenticated %}
                 <small class="text-muted mt-1 me-2 py-2">
                     Привет,
-                    {% if user.first_name %}
-                        {{ user.first_name }}
+                    {% if request.user.first_name %}
+                        {{ request.user.first_name }}
                     {% else %}
-                        {{ user }}
+                        {{ request.user }}
                     {% endif %}!
                 </small>
         <a class="me-2 py-2 btn btn-outline-secondary" href="{% url 'users:profile' %}">Профиль</a>
