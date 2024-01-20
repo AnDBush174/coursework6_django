@@ -3,9 +3,6 @@
 {% load static %}
 
 {% block content %}
-<div class="col-12 mb-4">
-    <a class="p-2 btn btn-outline-warning" href="{% url 'blog:create_article' %}">Добавить статью</a>
-</div>
 {% for object in object_list %}
 <div class="col-6">
     <div class="card mb-4 box-shadow">
@@ -15,18 +12,18 @@
             </h4>
         </div>
         <div class="card-body">
-            <p class="mt-3 mb-4 m-3 text-center">
-                {% if object.preview %}
-                <img src="{% mediapath object.preview %}" alt="{{ object }}" width="256px"/>
-                {% else %}
-                <img src="{% static 'img/default_article.png' %}" alt="{{ object }}" width="256px"/>
-                {% endif %}
+            {% if object.preview %}
+                <img src="{% mediapath object.preview %}" alt="{{ object }}" class="rounded img-fluid mb-3"/>
+            {% else %}
+                <img src="{% static 'img/article_default_img.jpg' %}" alt="{{ object }}" class="rounded img-fluid"/>
+            {% endif %}
+            <p>
+                {{ object.content|truncatechars:100 }}
+                <a href="{% url 'blog:view_article' object.slug %}">Читать дальше</a>
             </p>
-            <p>{{ object.content|truncatechars:100 }}</p>
-            <p class="text-center">
-                <a href="{% url 'blog:view_article' object.slug %}"
-                   class="btn btn-outline-success">Подробнее</a>
-            </p>
+        </div>
+        <div class="card-footer p-1 small text-muted text-end">
+            {{ object.created_on }} | Просмотров: {{ object.views }}
         </div>
     </div>
 </div>
