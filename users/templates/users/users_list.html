@@ -8,6 +8,7 @@
                 <th scope="col">ID</th>
                 <th scope="col">Имя пользователя</th>
                 <th scope="col">Email</th>
+                <th scope="col">Админ</th>
                 <th scope="col">Статус активности</th>
                 <th scope="col">Управление</th>
             </tr>
@@ -24,13 +25,16 @@
                     {{ object }}
                 </td>
                 <td>
+                    {{ object.is_superuser|yesno:"Да, Нет" }}
+                </td>
+                <td>
                     {{ object.is_active|yesno:"Активен,Заблокирован" }}
                 </td>
                 <td>
                     <a href="{% url 'users:user_edit' object.pk %}">Редактировать</a>
-                    {% if user.is_superuser %}
-                    <br /><a href="{% url 'users:user_delete' object.pk %}">Удалить</a>
-                    {% endif %}
+{#                    {% if user.is_superuser %}#}
+{#                    <br /><a href="{% url 'users:user_delete' object.pk %}">Удалить</a>#}
+{#                    {% endif %}#}
                 </td>
             </tr>
             {% endfor %}
