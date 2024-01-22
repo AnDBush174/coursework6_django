@@ -11,7 +11,7 @@ class MailingMessage(models.Model):
     subject = models.CharField(max_length=150, verbose_name='тема письма')
     body = models.TextField(**NULLABLE, verbose_name='тело письма')
     recipient = models.ManyToManyField(Client, related_name='clients', verbose_name='клиенты')
-    is_published = models.BooleanField(default=False, verbose_name='опубликована')
+    is_published = models.BooleanField(default=True, verbose_name='опубликована')
 
     owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,
                               related_name='mails', related_query_name="mail",
@@ -49,8 +49,7 @@ class MailingSettings(models.Model):
                                       **NULLABLE, verbose_name='периодичность')
     mailing_status = models.CharField(max_length=10, choices=STATUS.choices,
                                       default='created', verbose_name='статус рассылки')
-
-
+    next_sending_date = models.DateField(**NULLABLE, verbose_name='следующая отправка')
 
     def __str__(self):
         return f'{self.mailing_start} - {self.mailing_end}'
@@ -59,6 +58,16 @@ class MailingSettings(models.Model):
         verbose_name = 'настройки рассылки'
         verbose_name_plural = 'настройки рассылки'
         ordering = ('mailing_start', 'mailing_end',)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.next_sending_date:
+            self.next_sending_date = self.mailing_start
+
+    def save(self, *args, **kwargs):
+        if not self.next_sending_date:
+            self.next_sending_date = self.mailing_start
+        super().save(*args, **kwargs)
 
     def get_mailing_status_display(self):
         return dict(self.STATUS.choices).get(self.mailing_status, 'Черновик')
@@ -75,6 +84,7 @@ class MailingLog(models.Model):
     status = models.CharField(max_length=9, choices=STATUS.choices, **NULLABLE, verbose_name='статус отправки')
     message = models.TextField(**NULLABLE, verbose_name='ответ сервера')
     date = models.DateTimeField(**NULLABLE, verbose_name='время попытки')
+    mailing = models.ForeignKey(MailingMessage, **NULLABLE, on_delete=models.SET_NULL, verbose_name='рассылка')
 
     def __str__(self):
         return f'{self.date} - {self.status}'
