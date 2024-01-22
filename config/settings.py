@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'clients',
     'users',
     'blog',
+    'main',
 ]
 
 MIDDLEWARE = [
@@ -149,7 +150,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # mailing settings -- sending letters to console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 
 AUTH_USER_MODEL = 'users.User'
 

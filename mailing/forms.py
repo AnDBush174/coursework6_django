@@ -18,7 +18,7 @@ class StyleFormMixin:
 
 
 class MailingForm(StyleFormMixin, forms.ModelForm):
-    # recipient = forms.ModelMultipleChoiceField(queryset=Client.objects.none(), widget=forms.SelectMultiple)
+    recipient = forms.ModelMultipleChoiceField(queryset=Client.objects.none(), widget=forms.SelectMultiple)
 
     class Meta:
         model = MailingMessage
@@ -37,7 +37,11 @@ class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = MailingSettings
-        fields = '__all__'
+        fields = ['mailing_start', 'mailing_end', 'mailing_period', 'next_sending_date']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['next_sending_date'].widget = forms.HiddenInput()
 
 
 class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
@@ -48,4 +52,3 @@ class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
     def __init__(self, *args, **kwargs):
         kwargs.pop('user')
         super().__init__(*args, **kwargs)
-

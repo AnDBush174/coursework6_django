@@ -20,7 +20,7 @@
                         Создать рассылку
                         {% endif %}
                     </button>
-                    {% if user == object.owner %}
+                    {% if object %}
                     <a href="{% url 'mailing:update_mailing' object.pk %}" class="p-2 btn btn-outline-warning">
                         Сохранить и продолжить редактирование
                     </a>
