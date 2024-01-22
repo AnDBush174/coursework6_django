@@ -22,7 +22,7 @@ class MailingForm(StyleFormMixin, forms.ModelForm):
 
     class Meta:
         model = MailingMessage
-        fields = ['subject', 'body', 'recipient', 'is_published',]
+        fields = ['subject', 'body', 'recipient',]
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')

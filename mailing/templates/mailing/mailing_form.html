@@ -20,7 +20,7 @@
                         Создать рассылку
                         {% endif %}
                     </button>
-                    {% if object %}
+                    {% if object and not perms.mailing.can_cancel_mailing %}
                     <a href="{% url 'mailing:update_mailing' object.pk %}" class="p-2 btn btn-outline-warning">
                         Сохранить и продолжить редактирование
                     </a>

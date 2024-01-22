@@ -115,23 +115,17 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
         context['title'] = 'Редактирование рассылки'
         if self.request.user == self.object.owner or self.request.user.is_superuser:
             formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
-                                                    extra=1, can_delete=True)
+                                                    extra=1, can_delete=True, edit_only=True)
             if self.request.method == 'POST':
                 context['formset'] = formset_factory(self.request.POST, instance=self.object)
             else:
-                context['formset'] = formset_factory(instance=self.object)
+                context['formset'] = formset_factory(instance=self.object,)
         return context
 
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
-
-        if form.is_valid() and formset.is_valid():
-            self.object = form.save()
-            self.object.owner = self.request.user
-            self.object.save()
-
-            formset.instance = self.object
+        if formset.is_valid():
             for f in formset:
                 date_start = f.cleaned_data.get('mailing_start')
                 date_end = f.cleaned_data.get('mailing_end')
