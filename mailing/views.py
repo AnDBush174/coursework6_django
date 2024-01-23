@@ -115,11 +115,11 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
         context['title'] = 'Редактирование рассылки'
         if self.request.user == self.object.owner or self.request.user.is_superuser:
             formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
-                                                    extra=1, can_delete=True, edit_only=True)
+                                                    extra=1, can_delete=True)
             if self.request.method == 'POST':
                 context['formset'] = formset_factory(self.request.POST, instance=self.object)
             else:
-                context['formset'] = formset_factory(instance=self.object, )
+                context['formset'] = formset_factory(instance=self.object)
         return context
 
     def form_valid(self, form):
@@ -127,16 +127,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
         formset = context['formset']
         if formset.is_valid():
             for f in formset:
-                date_start = f.cleaned_data.get('mailing_start')
-                date_end = f.cleaned_data.get('mailing_end')
-                if date_start is not None:
-                    if date_start < datetime.now().date():
-                        form.add_error(None, "Рассылка не должна начинаться задним числом")
-                        return self.form_invalid(form=form)
-                    elif date_start > date_end:
-                        form.add_error(None, "Дата начала рассылки должна быть меньше даты окончания")
-                        return self.form_invalid(form=form)
-                    # меняем дату следующей отправки, если дата начала рассылки была изменена
+                if f.instance.mailing_start is not None:
                     f.instance.next_sending_date = f.instance.mailing_start
             formset.save()
             return super().form_valid(form)

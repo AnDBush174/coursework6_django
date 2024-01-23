@@ -7,6 +7,7 @@ from clients.models import Client
 
 
 class ClientListView(LoginRequiredMixin, ListView):
+    """Представление для просмотра списка получателей рассылок"""
     paginate_by = 50
     model = Client
     extra_context = {'title': 'Подписчики'}
@@ -20,6 +21,7 @@ class ClientListView(LoginRequiredMixin, ListView):
 
 
 class ClientCreateView(LoginRequiredMixin, CreateView):
+    """Представление для добавления нового подписчика"""
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('clients:all_clients')
@@ -33,12 +35,14 @@ class ClientCreateView(LoginRequiredMixin, CreateView):
 
 
 class ClientUpdateView(LoginRequiredMixin, UpdateView):
+    """Представление для изменения подписчика"""
     model = Client
     form_class = ClientForm
     success_url = reverse_lazy('clients:all_clients')
 
 
 class ClientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Представление для удаления подписчика"""
     model = Client
     success_url = reverse_lazy('clients:all_clients')
 

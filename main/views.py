@@ -1,5 +1,4 @@
 from django.db.models import Count
-from django.shortcuts import render
 from django.views.generic import TemplateView
 
 from blog.models import Article
@@ -11,6 +10,9 @@ class MainPageView(TemplateView):
     template_name = 'main/index.html'
 
     def get_context_data(self, **kwargs):
+        """
+        Представление для вывода главной страницы
+        """
         context = super().get_context_data(**kwargs)
         context['title'] = 'Главная страница'
         context['total_mailings'] = MailingSettings.objects.count()

@@ -4,6 +4,7 @@ from blog.models import Article
 
 
 class ArticleListView(ListView):
+    """Представление для просмотра статей блога"""
     paginate_by = 6
     model = Article
     extra_context = {'title': 'Наш бложичек'}
@@ -15,6 +16,7 @@ class ArticleListView(ListView):
 
 
 class ArticleDetailView(DetailView):
+    """Представление для просмотра отдельной статьи"""
     model = Article
 
     def get_context_data(self, **kwargs):

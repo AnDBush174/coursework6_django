@@ -11,6 +11,11 @@ from mailing.utils import get_mail_prepared, send_ready_mail
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
+        """
+        Функия для обработки и отправки рассылок.
+        После отправки задаёт дату следующей.
+        Сообщения об отправках логируются.
+        """
         curr_date = datetime.datetime.now().date()
 
         mail_to_handle = get_mail_prepared(curr_date).filter(setting__next_sending_date=curr_date)
