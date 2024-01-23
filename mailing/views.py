@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.forms import inlineformset_factory
 from django.http import HttpResponseForbidden
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from mailing.forms import MailingForm, ManagerMailingForm, MailingSettingsForm
@@ -65,8 +65,8 @@ class MailingCreateView(LoginRequiredMixin, GetUserForFormMixin, CreateView):
         formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
                                                 extra=1, can_delete=False)
         if self.request.method == 'POST':
-            context['formset'] = formset_factory(self.request.POST,)
-                                                 # queryset=MailingMessage.objects.filter(recipient=self.request.user))
+            context['formset'] = formset_factory(self.request.POST, )
+            # queryset=MailingMessage.objects.filter(recipient=self.request.user))
         else:
             context['formset'] = formset_factory()
 
@@ -119,7 +119,7 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
             if self.request.method == 'POST':
                 context['formset'] = formset_factory(self.request.POST, instance=self.object)
             else:
-                context['formset'] = formset_factory(instance=self.object,)
+                context['formset'] = formset_factory(instance=self.object, )
         return context
 
     def form_valid(self, form):
@@ -136,7 +136,8 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
                     elif date_start > date_end:
                         form.add_error(None, "Дата начала рассылки должна быть меньше даты окончания")
                         return self.form_invalid(form=form)
-                    f.cleaned_data['next_sending_date'] = date_start
+                    # меняем дату следующей отправки, если дата начала рассылки была изменена
+                    f.instance.next_sending_date = f.instance.mailing_start
             formset.save()
             return super().form_valid(form)
         else:
