@@ -2,7 +2,7 @@ from datetime import datetime
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin, UserPassesTestMixin
 from django.forms import inlineformset_factory
 from django.http import HttpResponseForbidden
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
 from mailing.forms import MailingForm, ManagerMailingForm, MailingSettingsForm
@@ -65,8 +65,8 @@ class MailingCreateView(LoginRequiredMixin, GetUserForFormMixin, CreateView):
         formset_factory = inlineformset_factory(MailingMessage, MailingSettings, form=MailingSettingsForm,
                                                 extra=1, can_delete=False)
         if self.request.method == 'POST':
-            context['formset'] = formset_factory(self.request.POST,)
-                                                 # queryset=MailingMessage.objects.filter(recipient=self.request.user))
+            context['formset'] = formset_factory(self.request.POST, )
+            # queryset=MailingMessage.objects.filter(recipient=self.request.user))
         else:
             context['formset'] = formset_factory()
 
@@ -125,24 +125,10 @@ class MailingUpdateView(LoginRequiredMixin, UserPassesTestMixin, GetUserForFormM
     def form_valid(self, form):
         context = self.get_context_data()
         formset = context['formset']
-
-        if form.is_valid() and formset.is_valid():
-            self.object = form.save()
-            self.object.owner = self.request.user
-            self.object.save()
-
-            formset.instance = self.object
+        if formset.is_valid():
             for f in formset:
-                date_start = f.cleaned_data.get('mailing_start')
-                date_end = f.cleaned_data.get('mailing_end')
-                if date_start is not None:
-                    if date_start < datetime.now().date():
-                        form.add_error(None, "Рассылка не должна начинаться задним числом")
-                        return self.form_invalid(form=form)
-                    elif date_start > date_end:
-                        form.add_error(None, "Дата начала рассылки должна быть меньше даты окончания")
-                        return self.form_invalid(form=form)
-                    f.cleaned_data['next_sending_date'] = date_start
+                if f.instance.mailing_start is not None:
+                    f.instance.next_sending_date = f.instance.mailing_start
             formset.save()
             return super().form_valid(form)
         else:

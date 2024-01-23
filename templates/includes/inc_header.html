@@ -1,4 +1,6 @@
-<h5 class="my-0 mr-md-auto font-weight-normal">SPAMER's BAY</h5>
+<h5 class="my-0 mr-md-auto font-weight-normal">
+    <a href="{% url 'main:index' %}" class="nav-link">SPAMER's BAY</a>
+</h5>
 <nav class="ms-5">
     <a class="me-1 p-2 btn btn-outline-primary" href="{% url 'blog:blog' %}">Бложичек</a>
     {% if perms.users.view_user %}

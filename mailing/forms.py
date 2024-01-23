@@ -2,10 +2,10 @@ from django import forms
 
 from clients.models import Client
 from mailing.models import MailingMessage, MailingSettings
-from users.models import User
 
 
 class StyleFormMixin:
+    """Миксин для красивого отображения полей формы"""
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field_name, field in self.fields.items():
@@ -18,11 +18,12 @@ class StyleFormMixin:
 
 
 class MailingForm(StyleFormMixin, forms.ModelForm):
+    """Основная форма создания рассылки: тема, сообщение, список получателей"""
     recipient = forms.ModelMultipleChoiceField(queryset=Client.objects.none(), widget=forms.SelectMultiple)
 
     class Meta:
         model = MailingMessage
-        fields = ['subject', 'body', 'recipient', 'is_published',]
+        fields = ['subject', 'body', 'recipient',]
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user')
@@ -34,6 +35,7 @@ class MailingForm(StyleFormMixin, forms.ModelForm):
 
 
 class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
+    """Дополнительная форма для рассылки: время начала, время окончания, периодичность"""
 
     class Meta:
         model = MailingSettings
@@ -45,6 +47,7 @@ class MailingSettingsForm(StyleFormMixin, forms.ModelForm):
 
 
 class ManagerMailingForm(StyleFormMixin, forms.ModelForm):
+    """Форма для менеджера для отключения рассылок"""
     class Meta:
         model = MailingMessage
         fields = ('is_published',)
