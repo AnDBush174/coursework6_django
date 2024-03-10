@@ -15,3 +15,4 @@ class Command(BaseCommand):
         )
         user.set_password(os.getenv('ADMIN_PW'))
         user.save()
+

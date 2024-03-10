@@ -7,3 +7,4 @@ from clients.models import Client
 class ClientAdmin(admin.ModelAdmin):
     list_display = ('name', 'email',)
     search_fields = ('email', )
+

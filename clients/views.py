@@ -49,3 +49,4 @@ class ClientDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def test_func(self):
         obj = self.get_object()
         return self.request.user.is_superuser or obj.owner == self.request.user
+

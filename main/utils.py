@@ -13,3 +13,4 @@ def cache_for_queryset(key: str, queryset: QuerySet, time: int = settings.CACHE_
         return queryset_cache
     cache.set(key, queryset, time)
     return queryset
+

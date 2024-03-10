@@ -93,3 +93,4 @@ class MailingLog(models.Model):
         verbose_name = 'лог'
         verbose_name_plural = 'логи'
         ordering = ('status',)
+

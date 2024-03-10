@@ -8,3 +8,4 @@ app_name = MainConfig.name
 urlpatterns = [
     path('', index, name='index'),
 ]
+

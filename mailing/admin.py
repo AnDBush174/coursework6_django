@@ -17,3 +17,4 @@ class MailingAdmin(admin.ModelAdmin):
     inlines = [
         MailingSettingsInline,
     ]
+

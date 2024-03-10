@@ -22,3 +22,4 @@ urlpatterns = [
     path('edit_user/<int:pk>/', UserUpdateView.as_view(), name='user_edit'),
     # path('delete_user/<int:pk>/', UserDeleteView.as_view(), name='user_delete'),
 ]
+

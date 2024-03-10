@@ -28,3 +28,4 @@ class User(AbstractUser):
         permissions = [
             ('can_block_user', 'Может блокировать пользователя'),
         ]
+

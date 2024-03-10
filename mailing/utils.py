@@ -62,3 +62,4 @@ def send_ready_mail(all_mail):
             from_email=config.settings.EMAIL_HOST_USER,
             recipient_list=[recipient]
         )
+

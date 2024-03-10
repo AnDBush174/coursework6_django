@@ -12,3 +12,4 @@ urlpatterns = [
     path('view_all/', MailingListView.as_view(), name='mailing_list'),
     path('view_details/<int:pk>/', MailingDetailView.as_view(), name='mailing_details'),
 ]
+

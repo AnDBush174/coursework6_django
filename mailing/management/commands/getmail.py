@@ -49,3 +49,4 @@ class Command(BaseCommand):
                 elif setting.mailing_period == MailingSettings.FREQUENCY.MONTHLY:
                     setting.next_sending_date = curr_date + relativedelta(months=+1)
                 setting.save()
+

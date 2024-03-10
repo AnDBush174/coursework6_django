@@ -217,3 +217,4 @@ def get_users_list(request):
 #     permission_required = 'users.delete_user'
 #     template_name = 'users/confirm_delete_user.html'
 #     success_url = reverse_lazy('users:list_users')
+

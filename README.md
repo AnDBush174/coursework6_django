@@ -83,3 +83,4 @@ python manage.py ccsu
 
 ![Дефолтный котик](static/img/article_default_img.jpg "Дефолтный котик в шоке")
 
+

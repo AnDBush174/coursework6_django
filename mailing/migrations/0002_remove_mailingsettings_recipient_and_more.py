@@ -21,3 +21,4 @@ class Migration(migrations.Migration):
             field=models.ManyToManyField(related_name='clients', to='clients.client', verbose_name='клиенты'),
         ),
     ]
+

@@ -29,3 +29,4 @@ class ArticleDetailView(DetailView):
         obj.views += 1
         obj.save()
         return obj
+

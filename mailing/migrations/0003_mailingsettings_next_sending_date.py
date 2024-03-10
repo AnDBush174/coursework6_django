@@ -16,3 +16,4 @@ class Migration(migrations.Migration):
             field=models.DateField(blank=True, null=True, verbose_name='следующая отправка'),
         ),
     ]
+

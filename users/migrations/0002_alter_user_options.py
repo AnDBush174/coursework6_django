@@ -15,3 +15,4 @@ class Migration(migrations.Migration):
             options={'ordering': ('is_active',), 'permissions': [('can_block_user', 'Может блокировать пользователя')], 'verbose_name': 'пользователь', 'verbose_name_plural': 'пользователи'},
         ),
     ]
+
